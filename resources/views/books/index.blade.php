@@ -4,72 +4,91 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Journals List - Library</title>
+    <title>Books List - Library</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body style="background: lightgray">
 
-    <div class="container mt-5 mb-5">
+    <div class="container mt-5">
         <div class="row">
             <div class="col-md-12">
+                <div>
+                    <h3 class="text-center my-4">Books List</h3>
+                    <h5 class="text-center"><a href="#">Library</a></h5>
+                    <hr>
+                </div>
                 <div class="card border-0 shadow-sm rounded">
                     <div class="card-body">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <h4 class="mb-4">Journals List</h4>
-                            <a href="{{ route('journals.create') }}" class="btn btn-success">Add New Journal</a>
-                        </div>
-
+                        <a href="{{ route('books.create') }}" class="btn btn-md btn-success mb-3">ADD NEW BOOK</a>
                         @if(session('success'))
-                            <div class="alert alert-success">{{ session('success') }}</div>
+                            <script>
+                                Swal.fire({
+                                    icon: "success",
+                                    title: "Success",
+                                    text: "{{ session('success') }}",
+                                    showConfirmButton: false,
+                                    timer: 2000
+                                });
+                            </script>
+                        @elseif(session('error'))
+                            <script>
+                                Swal.fire({
+                                    icon: "error",
+                                    title: "Error",
+                                    text: "{{ session('error') }}",
+                                    showConfirmButton: false,
+                                    timer: 2000
+                                });
+                            </script>
                         @endif
-
-                        <table class="table table-bordered table-striped">
+                        <table class="table table-bordered">
                             <thead>
                                 <tr>
-                                    <th>#</th>
-                                    <th>Title</th>
-                                    <th>Author</th>
-                                    <th>Category</th>
-                                    <th>Publication Date</th>
-                                    <th>Access Status</th>
-                                    <th>Actions</th>
+                                    <th scope="col">#</th>
+                                    <th scope="col">Title</th>
+                                    <th scope="col">Author</th>
+                                    <th scope="col">Category</th>
+                                    <th scope="col">Publication Date</th>
+                                    <th scope="col">Access Status</th>
+                                    <th scope="col" style="width: 20%">Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach($journals as $journal)
+                                @forelse ($books as $book)
                                     <tr>
                                         <td>{{ $loop->iteration }}</td>
-                                        <td>{{ $journal->title }}</td>
-                                        <td>{{ $journal->author }}</td>
-                                        <td>{{ $journal->category }}</td>
-                                        <td>{{ $journal->publication_date }}</td>
+                                        <td>{{ $book->title }}</td>
+                                        <td>{{ $book->author }}</td>
+                                        <td>{{ $book->category }}</td>
+                                        <td>{{ $book->publication_date }}</td>
                                         <td>
                                             <span class="badge 
-                                                @if($journal->is_accessible == 'requested') badge-warning
-                                                @elseif($journal->is_accessible == 'granted') badge-success
-                                                @elseif($journal->is_accessible == 'denied') badge-danger
+                                                @if($book->is_accessible == 'requested') badge-warning
+                                                @elseif($book->is_accessible == 'granted') badge-success
+                                                @elseif($book->is_accessible == 'denied') badge-danger
                                                 @endif">
-                                                {{ ucfirst($journal->is_accessible) }}
+                                                {{ ucfirst($book->is_accessible) }}
                                             </span>
                                         </td>
-                                        <td>
-                                            <a href="{{ route('journals.edit', $journal->id) }}" class="btn btn-primary btn-sm">Edit</a>
-
-                                            <!-- Delete Form -->
-                                            <form action="{{ route('journals.destroy', $journal->id) }}" method="POST" style="display:inline;">
+                                        <td class="text-center">
+                                            <form onsubmit="return confirm('Are you sure?');" action="{{ route('books.destroy', $book->id) }}" method="POST">
+                                                <a href="{{ route('books.show', $book->id) }}" class="btn btn-sm btn-dark">SHOW</a>
+                                                <a href="{{ route('books.edit', $book->id) }}" class="btn btn-sm btn-primary">EDIT</a>
                                                 @csrf
                                                 @method('DELETE')
-                                                <button type="submit" class="btn btn-sm btn-danger" onclick="return confirmDelete()">Delete</button>
+                                                <button type="submit" class="btn btn-sm btn-danger">DELETE</button>
                                             </form>
                                         </td>
                                     </tr>
-                                @endforeach
+                                @empty
+                                    <div class="alert alert-danger">
+                                        No books available.
+                                    </div>
+                                @endforelse
                             </tbody>
                         </table>
-
-                        <!-- Pagination -->
-                        <div class="d-flex justify-content-center mt-3">
-                            {{ $journals->links() }}
+                        <div class="d-flex justify-content-center">
+                            {{ $books->links() }}
                         </div>
                     </div>
                 </div>

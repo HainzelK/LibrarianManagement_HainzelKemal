@@ -16,8 +16,8 @@ class BookController extends Controller
      */
     public function index(): View
     {
-        // Get all books with pagination
-        $books = Book::latest()->paginate(10);
+        // Get all approved books
+        $books = Book::where('approval_status', 'approved')->latest()->paginate(10);
 
         // Render view with books
         return view('books.index', compact('books'));
@@ -50,17 +50,18 @@ class BookController extends Controller
             'available'    => 'required|boolean',
         ]);
 
-        // Create a new book
+        // Create a new book with pending approval
         Book::create([
             'title'        => $request->title,
             'author'       => $request->author,
             'category'     => $request->category,
             'is_physical'  => $request->is_physical,
             'available'    => $request->available,
+            'approval_status' => 'pending', // Initially pending
         ]);
 
         // Redirect to index with success message
-        return redirect()->route('books.index')->with(['success' => 'Book Successfully Created!']);
+        return redirect()->route('books.index')->with(['success' => 'Book Successfully Created! Awaiting Admin Approval.']);
     }
 
     /**
@@ -121,10 +122,12 @@ class BookController extends Controller
             'category'     => $request->category,
             'is_physical'  => $request->is_physical,
             'available'    => $request->available,
+            // Retain the pending approval status
+            'approval_status' => 'pending', // Keep pending until admin approval
         ]);
 
         // Redirect to index with success message
-        return redirect()->route('books.index')->with(['success' => 'Book Successfully Updated!']);
+        return redirect()->route('books.index')->with(['success' => 'Book Successfully Updated! Awaiting Admin Approval.']);
     }
 
     /**
