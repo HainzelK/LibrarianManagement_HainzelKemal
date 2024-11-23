@@ -2,12 +2,16 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Spatie\Permission\Traits\HasRoles;
 
 class Role extends Model
 {
-    use HasRoles; // This trait provides convenient methods for managing roles
+    use HasFactory;
 
-    // You can also define any custom properties or methods for your roles here
+    // Define the relationship with users
+    public function users()
+    {
+        return $this->belongsToMany(User::class);
+    }
 }

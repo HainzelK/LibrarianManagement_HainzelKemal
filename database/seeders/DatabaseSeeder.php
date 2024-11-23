@@ -3,30 +3,22 @@
 namespace Database\Seeders;
 
 use App\Models\User;
+// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
-use Spatie\Permission\Models\Role;
-use Spatie\Permission\Models\Permission;
 
 class DatabaseSeeder extends Seeder
 {
-    public function run()
+    /**
+     * Seed the application's database.
+     */
+    public function run(): void
     {
-        $this->call([
-            RoleSeeder::class,
-        ]);
+        // User::factory(10)->create();
         
-        // Create an admin user
-        $admin = \App\Models\User::factory()->create([
-            'name' => 'Admin User',
-            'email' => 'admin@example.com',
+        User::factory()->create([
+            'name' => 'Test User',
+            'email' => 'test@example.com',
         ]);
-        $admin->assignRole('admin');
-    
-        // Create a librarian user
-        $librarian = \App\Models\User::create([
-            'name' => 'Librarian User',
-            'email' => 'librarian@example.com',
-        ]);
-        $librarian->assignRole('librarian');
+        $this->call(RolesTableSeeder::class);
     }
 }
